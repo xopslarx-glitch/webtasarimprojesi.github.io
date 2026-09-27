@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Halka PRO - GIF & Profil Destekli Sohbet</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f3f0e9;
+  --pn: rgba(255, 253, 249, 0.9);
+  --pn2: rgba(240, 233, 223, 0.75);
+  --tx: #1e1926;
+  --mu: #7e738f;
+  --ac: #7c5cff;
+  --ac2: #ff6fa5;
+  --ln: rgba(200, 185, 170, 0.35);
+  --in: #ffffff;
+  --gr: #2fbf71;
+  --sh: 0 12px 40px rgba(60, 40, 90, 0.08);
+  box-sizing: border-box;
+}
+
+:root[data-theme="dark"] {
+  --bg: #0f0c1b;
+  --pn: rgba(27, 22, 38, 0.9);
+  --pn2: rgba(38, 31, 52, 0.75);
+  --tx: #f3effa;
+  --mu: #9b90b0;
+  --ln: rgba(255, 255, 255, 0.08);
+  --in: #221b30;
+  --sh: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; width: 100%; }
+body {
+  background: radial-gradient(80% 80% at 20% 0%, rgba(124, 92, 255, 0.18), transparent 60%),
+              radial-gradient(80% 80% at 80% 100%, rgba(255, 111, 165, 0.15), transparent 60%),
+              var(--bg);
+  color: var(--tx);
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  overflow: hidden;
+}
+
+button, input { font: inherit; color: inherit; }
+button { background: none; border: 0; cursor: pointer; transition: all 0.2s ease; }
+
+#app {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  height: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  gap: 16px;
+  padding: 16px;
+}
+
+.card {
+  background: var(--pn);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--ln);
+  border-radius: 28px;
+  box-shadow: var(--sh);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#list header {
+  padding: 22px 20px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ac), var(--ac2));
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 12px rgba(124, 92, 255, 0.3);
+}
+.logo::after {
+  content: '';
+  width: 14px;
+  height: 14px;
+  background: var(--pn);
+  border-radius: 50%;
+}
+
+h1 { font-size: 20px; font-weight: 800; flex: 1; letter-spacing: -0.5px; display: flex; align-items: center; gap: 6px; }
+.pro {
+  background: linear-gradient(135deg, #f6d365, #fda085);
+  color: #4a2800;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 10px;
+}
+
+.ib {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--pn2);
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+}
+.ib:hover { transform: scale(1.08); background: var(--ln); }
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin: 6px 16px 12px;
+  background: var(--pn2);
+  padding: 4px;
+  border-radius: 16px;
+}
+.tabs button {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--mu);
+}
+.tabs button.on {
+  background: var(--pn);
+  color: var(--tx);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.srch {
+  margin: 0 16px 12px;
+  width: calc(100% - 32px);
+  background: var(--in);
+  border: 1px solid var(--ln);
+  border-radius: 16px;
+  padding: 10px 16px;
+  outline: 0;
+  font-size: 14px;
+}
+
+#body { flex: 1; overflow-y: auto; padding: 4px 12px 16px; }
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 18px;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 4px;
+}
+.row:hover, .row.on { background: var(--pn2); }
+
+.av {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 800;
+  flex: none;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.mid { flex: 1; min-width: 0; cursor: pointer; }
+.mid b { display: block; font-size: 14px; font-weight: 700; }
+.mid small { display: block; color: var(--mu); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.sec { font-size: 11px; font-weight: 800; color: var(--mu); text-transform: uppercase; letter-spacing: 0.8px; padding: 12px 10px 6px; }
+
+.pill {
+  background: linear-gradient(135deg, var(--ac), var(--ac2));
+  color: #fff;
+  border-radius: 12px;
+  padding: 6px 14px;
+  font-weight: 700;
+  font-size: 12px;
+}
+.pill.g { background: var(--pn2); color: var(--tx); }
+.pill:hover { opacity: 0.9; }
+
+.add { display: flex; gap: 8px; padding: 6px 10px 12px; }
+.add input {
+  flex: 1;
+  background: var(--in);
+  border: 1px solid var(--ln);
+  border-radius: 14px;
+  padding: 10px 14px;
+  outline: 0;
+  font-size: 13px;
+}
+
+#chat header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid var(--ln);
+}
+
+#msgs {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.b {
+  max-width: 70%;
+  padding: 10px 16px;
+  border-radius: 20px;
+  background: var(--pn2);
+  align-self: flex-start;
+  word-wrap: break-word;
+  position: relative;
+  font-size: 14px;
+}
+
+.b.me {
+  align-self: flex-end;
+  background: linear-gradient(135deg, var(--ac), var(--ac2));
+  color: #fff;
+  border-bottom-right-radius: 6px;
+}
+
+.b small {
+  display: block;
+  font-size: 10px;
+  opacity: 0.7;
+  text-align: right;
+  margin-top: 3px;
+}
+
+#cmp {
+  padding: 14px 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  position: relative;
+  border-top: 1px solid var(--ln);
+}
+#in {
+  flex: 1;
+  background: var(--in);
+  border: 1px solid var(--ln);
+  border-radius: 24px;
+  padding: 12px 20px;
+  outline: 0;
+  font-size: 14px;
+}
+
+#send {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ac), var(--ac2));
+  color: #fff;
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+}
+
+.empty { margin: auto; text-align: center; color: var(--mu); padding: 30px; }
+.empty .big { font-size: 56px; margin-bottom: 8px; }
+
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--tx);
+  color: var(--bg);
+  padding: 12px 24px;
+  border-radius: 24px;
+  transition: transform 0.3s;
+  font-weight: 700;
+  font-size: 13px;
+  z-index: 999;
+}
+#toast.on { transform: translateX(-50%) translateY(0); }
+
+.mod {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 5, 20, 0.6);
+  backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  z-index: 100;
+}
+.mod > div {
+  background: var(--pn);
+  border: 1px solid var(--ln);
+  border-radius: 32px;
+  padding: 28px;
+  width: min(380px, 90%);
+  text-align: center;
+  box-shadow: var(--sh);
+}
+.mod input {
+  width: 100%;
+  background: var(--in);
+  border: 1px solid var(--ln);
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin: 6px 0;
+  outline: 0;
+  font-size: 14px;
+}
+
+.avatar-select {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+.avatar-opt {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.2s;
+}
+.avatar-opt:hover { border-color: var(--ac); transform: scale(1.1); }
+
+@media(max-width: 800px) {
+  #app { grid-template-columns: 1fr; padding: 0; }
+  .card { border-radius: 0; border: none; }
+  #chat { display: none; }
+  body.ch #list { display: none; }
+  body.ch #chat { display: flex; }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <section class="card" id="list">
+    <header>
+      <div class="logo"></div>
+      <h1>Halka <span class="pro">PRO</span></h1>
+      <button class="ib" id="pf" title="Profilim">👤</button>
+      <button class="ib" id="th" title="Tema">🌗</button>
+    </header>
+    <div class="tabs">
+      <button id="t1" class="on">Sohbetler</button>
+      <button id="t2">Arkadaşlar</button>
+    </div>
+    <input class="srch" id="sq" placeholder="🔍 Ara…">
+    <div id="body"></div>
+  </section>
+
+  <section class="card" id="chat"></section>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const COL = ['#ff6fa5','#7c5cff','#ff9f43','#2fbf71','#3aa0ff','#e056fd','#ee5a52'];
+
+// Hazır GIF ve Avatar Örnekleri
+const DEF_GIFS = [
+  'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3pjc3Y2Y3B2MnRmcjhncXF1c2x4dnpvaHAyeHR3eHBkdjZqMm50eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3vR16pONsE85LQI8/giphy.gif',
+  'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThjcTJlMW8xeG4ydDlyMWFpdnVsd29md3YxbWZ0ZXZmbGprN3c1MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKIPnAiaMCws8nOsE/giphy.gif',
+  'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpuc2cxcndrdjE3ejVpZmQyMmJvZHluMWlsMnB2aXlhNmQ5MmprdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/13Hgw8T85wT3Ve/giphy.gif',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=Felix'
+];
+
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const tm = t => new Date(t).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+
+let LocalDB = {
+  users: JSON.parse(localStorage.getItem('hk_users') || '{"ahmet":{"id":"ahmet","n":"Ahmet","mood":"Yazılım geliştirici 💻","c":"#7c5cff","img":""},"mehmet":{"id":"mehmet","n":"Mehmet","mood":"Tasarım yapmayı sever 🎨","c":"#ff6fa5","img":""}}'),
+  creds: JSON.parse(localStorage.getItem('hk_creds') || '{"ahmet":{"pass":"123456"},"mehmet":{"pass":"123456"}}'),
+  reqs: JSON.parse(localStorage.getItem('hk_reqs') || '[]'),
+  msgs: JSON.parse(localStorage.getItem('hk_msgs') || '[]'),
+  save() {
+    try {
+      localStorage.setItem('hk_users', JSON.stringify(this.users));
+      localStorage.setItem('hk_creds', JSON.stringify(this.creds));
+      localStorage.setItem('hk_reqs', JSON.stringify(this.reqs));
+      localStorage.setItem('hk_msgs', JSON.stringify(this.msgs));
+    } catch(e) {
+      toast('Depolama alanı doldu! Daha küçük GIF yükleyin.');
+    }
+  }
+};
+
+let me = null, cur = 'global', tab = 1, qs = '', authM = null, tempImg = '';
+
+function toast(t) {
+  const e = $('#toast');
+  e.textContent = t;
+  e.classList.add('on');
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => e.classList.remove('on'), 2600);
+}
+
+function modal(h) {
+  const m = document.createElement('div');
+  m.className = 'mod';
+  m.innerHTML = '<div>' + h + '</div>';
+  m.onclick = e => { if(e.target === m && me) m.remove(); };
+  document.body.append(m);
+  return m;
+}
+
+const av = (u, big) => {
+  const style = u.img ? `background-image:url('${u.img}')` : `background:${u.c || COL[0]}`;
+  const txt = u.img ? '' : esc((u.n || '?')[0].toUpperCase());
+  return `<div class="av" style="${style}${big ? ';width:84px;height:84px;font-size:34px;margin:0 auto 12px' : ''}">${txt}</div>`;
+};
+
+function auth() {
+  let mode = 'up';
+  authM = modal('');
+  const box = authM.firstChild;
+
+  const draw = () => {
+    const up = mode === 'up';
+    box.innerHTML = `<h2>Halka <span class="pro">PRO</span></h2>
+    <div class="tabs" style="margin:16px 0 12px">
+      <button id="tu" class="${up ? 'on' : ''}">Kayıt ol</button>
+      <button id="ti" class="${up ? '' : 'on'}">Giriş yap</button>
+    </div>
+    <input id="au" placeholder="Kullanıcı adı" maxlength="20">
+    ${up ? '<input id="am" placeholder="Durum sözün">' : ''}
+    <input id="ap" type="password" placeholder="Şifre">
+    <button class="pill" id="ag" style="width:100%;padding:12px;margin-top:12px">${up ? 'Hesabı oluştur' : 'Giriş yap'}</button>`;
+    
+    $('#ti').onclick = () => { mode = 'in'; draw(); };
+    $('#tu').onclick = () => { mode = 'up'; draw(); };
+    
+    $('#ag').onclick = () => {
+      const u = $('#au').value.trim().toLowerCase();
+      const p = $('#ap').value;
+      if(!u || !p) return toast('Gerekli alanları doldurun');
+
+      if(mode === 'up') {
+        if(LocalDB.creds[u]) return toast('Bu kullanıcı adı alınmış');
+        LocalDB.creds[u] = { pass: p };
+        LocalDB.users[u] = { id: u, n: $('#au').value.trim(), mood: $('#am')?.value || 'Merhaba! 👋', c: COL[Math.floor(Math.random()*COL.length)], img: '' };
+        LocalDB.save();
+        toast('Kayıt başarılı! 🎉');
+      } else {
+        if(!LocalDB.creds[u] || LocalDB.creds[u].pass !== p) return toast('Kullanıcı adı veya şifre hatalı');
+      }
+      
+      me = u;
+      authM.remove();
+      start();
+    };
+  };
+  draw();
+}
+
+function viewProfile(uid) {
+  const u = LocalDB.users[uid];
+  if(!u) return;
+  const isMe = uid === me;
+  tempImg = u.img || '';
+  
+  let avatarsHtml = DEF_GIFS.map(url => `<div class="avatar-opt" style="background-image:url('${url}')" onclick="setAvatar('${url}')"></div>`).join('');
+
+  const m = modal(`${av(u, true)}
+  <h2>${esc(u.n)}</h2>
+  <p style="color:var(--mu);margin-bottom:12px">@${esc(u.id)}</p>
+  ${isMe ? `
+    <div style="margin-bottom:10px">
+      <small style="color:var(--mu)">GIF veya Profil Resmi Seç</small>
+      <div class="avatar-select">${avatarsHtml}</div>
+      <input type="file" id="imgUp" accept="image/*,.gif" style="display:none">
+      <button class="pill g" onclick="$('#imgUp').click()" style="width:100%;margin-bottom:10px">🎞️ Cihazdan GIF / Fotoğraf Yükle</button>
+    </div>
+    <input id="editMood" value="${esc(u.mood)}" placeholder="Durumun" style="margin-bottom:12px">
+    <button class="pill" id="saveProf" style="width:100%;padding:10px">Kaydet</button>
+  ` : `
+    <p style="margin-bottom:16px;background:var(--pn2);padding:10px;border-radius:12px">${esc(u.mood)}</p>
+    <button class="pill" onclick="this.closest('.mod').remove(); openChat('${u.id}')" style="width:100%;padding:10px">Mesaj Gönder</button>
+  `}`);
+
+  if(isMe) {
+    m.querySelector('#imgUp').onchange = e => {
+      const file = e.target.files[0];
+      if(file) {
+        if(file.size > 3 * 1024 * 1024) return toast('Lütfen 3MB\'dan küçük GIF/Resim seçin');
+        const reader = new FileReader();
+        reader.onload = ev => {
+          tempImg = ev.target.result;
+          setAvatar(tempImg);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    m.querySelector('#saveProf').onclick = () => {
+      u.mood = $('#editMood').value.trim();
+      u.img = tempImg;
+      LocalDB.save();
+      m.remove();
+      toast('Profil güncellendi ✨');
+      rList();
+      if(cur === me) openChat(me);
+    };
+  }
+}
+
+function setAvatar(url) {
+  tempImg = url;
+  const avEl = document.querySelector('.mod .av');
+  if(avEl) {
+    avEl.style.backgroundImage = `url('${url}')`;
+    avEl.textContent = '';
+  }
+}
+
+function rList() {
+  const U = LocalDB.users;
+  const friends = LocalDB.reqs.filter(r => (r.from === me || r.to === me) && r.st === 'ok').map(r => r.from === me ? r.to : r.from);
+  
+  let h = '';
+  if(tab === 1) {
+    h = `<button class="row ${cur === 'global' ? 'on' : ''}" onclick="openChat('global')">${av({n:'🌍', c:'#7c5cff', img:''})}<div class="mid"><b>Genel Oda</b><small>Herkesle sohbet et</small></div></button>`;
+    
+    friends.forEach(fid => {
+      const u = U[fid];
+      if(u && u.n.toLowerCase().includes(qs)) {
+        h += `<div class="row ${cur === fid ? 'on' : ''}">
+          <div onclick="viewProfile('${u.id}')">${av(u)}</div>
+          <div class="mid" onclick="openChat('${u.id}')"><b>${esc(u.n)}</b><small>${esc(u.mood)}</small></div>
+        </div>`;
+      }
+    });
+  } else {
+    h = `<div class="add"><input id="ai" placeholder="Kullanıcı adı ile arkadaş ekle…"><button class="pill" id="ab">Ekle</button></div>`;
+    
+    const inReqs = LocalDB.reqs.filter(r => r.to === me && r.st === 'p');
+    if(inReqs.length) {
+      h += `<div class="sec">Gelen İstekler</div>`;
+      inReqs.forEach(r => {
+        const u = U[r.from] || {n:'?'};
+        h += `<div class="row">${av(u)}<div class="mid"><b>${esc(u.n)}</b></div>
+        <button class="pill" onclick="acceptReq('${r.from}')">Kabul</button></div>`;
+      });
+    }
+
+    h += `<div class="sec">Arkadaşlarım (${friends.length})</div>`;
+    friends.forEach(fid => {
+      const u = U[fid];
+      if(u) {
+        h += `<div class="row">
+          <div onclick="viewProfile('${u.id}')">${av(u)}</div>
+          <div class="mid" onclick="openChat('${u.id}')"><b>${esc(u.n)}</b><small>${esc(u.mood)}</small></div>
+        </div>`;
+      }
+    });
+
+    const others = Object.keys(U).filter(k => k !== me && !friends.includes(k));
+    if(others.length) {
+      h += `<div class="sec">Topluluktaki Kişiler</div>`;
+      others.forEach(oid => {
+        const u = U[oid];
+        const isSent = LocalDB.reqs.some(r => r.from === me && r.to === oid && r.st === 'p');
+        h += `<div class="row">
+          <div onclick="viewProfile('${u.id}')">${av(u)}</div>
+          <div class="mid" onclick="viewProfile('${u.id}')"><b>${esc(u.n)}</b><small>${esc(u.mood)}</small></div>
+          ${isSent ? `<small style="color:var(--mu)">İstek atıldı</small>` : `<button class="pill" onclick="addFriend('${u.id}')">+ Ekle</button>`}
+        </div>`;
+      });
+    }
+  }
+  
+  $('#body').innerHTML = h;
+  if($('#ab')) $('#ab').onclick = () => addFriend($('#ai').value.trim().toLowerCase());
+}
+
+function addFriend(targetId) {
+  if(!targetId || !LocalDB.users[targetId]) return toast('Kullanıcı bulunamadı');
+  if(targetId === me) return toast('Kendini ekleyemezsin');
+  
+  const exist = LocalDB.reqs.find(r => (r.from === me && r.to === targetId) || (r.from === targetId && r.to === me));
+  if(exist) return toast('Zaten istek veya arkadaşlık mevcut');
+
+  LocalDB.reqs.push({ from: me, to: targetId, st: 'p' });
+  LocalDB.save();
+  toast('İstek gönderildi 📨');
+  rList();
+}
+
+function acceptReq(fromId) {
+  const req = LocalDB.reqs.find(r => r.from === fromId && r.to === me);
+  if(req) {
+    req.st = 'ok';
+    LocalDB.save();
+    toast('Artık arkadaşsınız! 🎉');
+    rList();
+  }
+}
+
+function openChat(id) {
+  cur = id;
+  document.body.classList.add('ch');
+  const u = id === 'global' ? {n:'Genel Oda', c:'#7c5cff', img:''} : LocalDB.users[id];
+  
+  $('#chat').innerHTML = `<header>
+    <button class="ib" id="back" onclick="document.body.classList.remove('ch')">←</button>
+    <div onclick="viewProfile('${id}')" style="display:flex;align-items:center;gap:10px;cursor:pointer">
+      ${av(u)}
+      <div class="mid"><b>${esc(u.n)}</b><small>Profili gör</small></div>
+    </div>
+  </header>
+  <div id="msgs"></div>
+  <div id="cmp">
+    <input id="in" placeholder="Mesaj yaz…" autocomplete="off">
+    <button id="send" onclick="send()">➤</button>
+  </div>`;
+
+  $('#in').onkeydown = e => { if(e.key === 'Enter') send(); };
+  rMsgs();
+}
+
+function rMsgs() {
+  const el = $('#msgs');
+  if(!el) return;
+  const filtered = LocalDB.msgs.filter(m => cur === 'global' ? m.to === 'global' : (m.from === me && m.to === cur) || (m.from === cur && m.to === me));
+  
+  el.innerHTML = filtered.length ? filtered.map(m => {
+    const mine = m.from === me;
+    const u = LocalDB.users[m.from] || {n:'?'};
+    return `<div class="b ${mine ? 'me' : ''}">
+      ${cur === 'global' && !mine ? `<b style="font-size:11px;display:block;margin-bottom:2px;color:${u.c}">${esc(u.n)}</b>` : ''}
+      ${esc(m.t)}
+      <small>${tm(m.ts)}</small>
+    </div>`;
+  }).join('') : '<div class="empty"><div class="big">💬</div>Sohbete başla!</div>';
+  
+  el.scrollTop = el.scrollHeight;
+}
+
+function send() {
+  const input = $('#in');
+  const t = input.value.trim();
+  if(!t) return;
+  
+  LocalDB.msgs.push({ from: me, to: cur, t, ts: Date.now() });
+  LocalDB.save();
+  input.value = '';
+  rMsgs();
+}
+
+function start() {
+  rList();
+  openChat('global');
+}
+
+$('#t1').onclick = () => { tab = 1; $('#t1').className = 'on'; $('#t2').className = ''; rList(); };
+$('#t2').onclick = () => { tab = 2; $('#t2').className = 'on'; $('#t1').className = ''; rList(); };
+$('#pf').onclick = () => me && viewProfile(me);
+$('#sq').oninput = e => { qs = e.target.value.toLowerCase(); rList(); };
+
+$('#th').onclick = () => {
+  const d = document.documentElement;
+  d.dataset.theme = d.dataset.theme === 'dark' ? 'light' : 'dark';
+};
+
+auth();
+</script>
+</body>
+</html>
